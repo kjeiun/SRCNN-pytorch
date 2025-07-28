@@ -1,129 +1,32 @@
-# SRCNN
-
-This repository is implementation of the ["Image Super-Resolution Using Deep Convolutional Networks"](https://arxiv.org/abs/1501.00092).
-
-<center><img src="./thumbnails/fig1.png"></center>
-
-## Differences from the original
-
-- Added the zero-padding
-- Used the Adam instead of the SGD
-- Removed the weights initialization
-
-## Requirements
-
-- PyTorch 1.0.0
-- Numpy 1.15.4
-- Pillow 5.4.1
-- h5py 2.8.0
-- tqdm 4.30.0
-
-## Train
-
-The 91-image, Set5 dataset converted to HDF5 can be downloaded from the links below.
-
-| Dataset | Scale | Type | Link |
-|---------|-------|------|------|
-| 91-image | 2 | Train | [Download](https://www.dropbox.com/s/2hsah93sxgegsry/91-image_x2.h5?dl=0) |
-| 91-image | 3 | Train | [Download](https://www.dropbox.com/s/curldmdf11iqakd/91-image_x3.h5?dl=0) |
-| 91-image | 4 | Train | [Download](https://www.dropbox.com/s/22afykv4amfxeio/91-image_x4.h5?dl=0) |
-| Set5 | 2 | Eval | [Download](https://www.dropbox.com/s/r8qs6tp395hgh8g/Set5_x2.h5?dl=0) |
-| Set5 | 3 | Eval | [Download](https://www.dropbox.com/s/58ywjac4te3kbqq/Set5_x3.h5?dl=0) |
-| Set5 | 4 | Eval | [Download](https://www.dropbox.com/s/0rz86yn3nnrodlb/Set5_x4.h5?dl=0) |
-
-Otherwise, you can use `prepare.py` to create custom dataset.
-
-```bash
-python train.py --train-file "BLAH_BLAH/91-image_x3.h5" \
-                --eval-file "BLAH_BLAH/Set5_x3.h5" \
-                --outputs-dir "BLAH_BLAH/outputs" \
-                --scale 3 \
-                --lr 1e-4 \
-                --batch-size 16 \
-                --num-epochs 400 \
-                --num-workers 8 \
-                --seed 123                
-```
-
-## Test
-
-Pre-trained weights can be downloaded from the links below.
-
-| Model | Scale | Link |
-|-------|-------|------|
-| 9-5-5 | 2 | [Download](https://www.dropbox.com/s/rxluu1y8ptjm4rn/srcnn_x2.pth?dl=0) |
-| 9-5-5 | 3 | [Download](https://www.dropbox.com/s/zn4fdobm2kw0c58/srcnn_x3.pth?dl=0) |
-| 9-5-5 | 4 | [Download](https://www.dropbox.com/s/pd5b2ketm0oamhj/srcnn_x4.pth?dl=0) |
-
-The results are stored in the same path as the query image.
-
-```bash
-python test.py --weights-file "BLAH_BLAH/srcnn_x3.pth" \
-               --image-file "data/butterfly_GT.bmp" \
-               --scale 3
-```
-
-## Results
-
-We used the network settings for experiments, i.e., <a href="https://www.codecogs.com/eqnedit.php?latex={&space;f&space;}_{&space;1&space;}=9,{&space;f&space;}_{&space;2&space;}=5,{&space;f&space;}_{&space;3&space;}=5,{&space;n&space;}_{&space;1&space;}=64,{&space;n&space;}_{&space;2&space;}=32,{&space;n&space;}_{&space;3&space;}=1" target="_blank"><img src="https://latex.codecogs.com/gif.latex?{&space;f&space;}_{&space;1&space;}=9,{&space;f&space;}_{&space;2&space;}=5,{&space;f&space;}_{&space;3&space;}=5,{&space;n&space;}_{&space;1&space;}=64,{&space;n&space;}_{&space;2&space;}=32,{&space;n&space;}_{&space;3&space;}=1" title="{ f }_{ 1 }=9,{ f }_{ 2 }=5,{ f }_{ 3 }=5,{ n }_{ 1 }=64,{ n }_{ 2 }=32,{ n }_{ 3 }=1" /></a>.
-
-PSNR was calculated on the Y channel.
-
-### Set5
-
-| Eval. Mat | Scale | SRCNN | SRCNN (Ours) |
-|-----------|-------|-------|--------------|
-| PSNR | 2 | 36.66 | 36.65 |
-| PSNR | 3 | 32.75 | 33.29 |
-| PSNR | 4 | 30.49 | 30.25 |
-
-<table>
-    <tr>
-        <td><center>Original</center></td>
-        <td><center>BICUBIC x3</center></td>
-        <td><center>SRCNN x3 (27.53 dB)</center></td>
-    </tr>
-    <tr>
-    	<td>
-    		<center><img src="./data/butterfly_GT.bmp""></center>
-    	</td>
-    	<td>
-    		<center><img src="./data/butterfly_GT_bicubic_x3.bmp"></center>
-    	</td>
-    	<td>
-    		<center><img src="./data/butterfly_GT_srcnn_x3.bmp"></center>
-    	</td>
-    </tr>
-    <tr>
-        <td><center>Original</center></td>
-        <td><center>BICUBIC x3</center></td>
-        <td><center>SRCNN x3 (29.30 dB)</center></td>
-    </tr>
-    <tr>
-    	<td>
-    		<center><img src="./data/zebra.bmp""></center>
-    	</td>
-    	<td>
-    		<center><img src="./data/zebra_bicubic_x3.bmp"></center>
-    	</td>
-    	<td>
-    		<center><img src="./data/zebra_srcnn_x3.bmp"></center>
-    	</td>
-    </tr>
-    <tr>
-        <td><center>Original</center></td>
-        <td><center>BICUBIC x3</center></td>
-        <td><center>SRCNN x3 (28.58 dB)</center></td>
-    </tr>
-    <tr>
-    	<td>
-    		<center><img src="./data/ppt3.bmp""></center>
-    	</td>
-    	<td>
-    		<center><img src="./data/ppt3_bicubic_x3.bmp"></center>
-    	</td>
-    	<td>
-    		<center><img src="./data/ppt3_srcnn_x3.bmp"></center>
-    	</td>
-    </tr>
-</table>
+| n | strong_train_acc | strong_test_acc |
+|---:|:---|:---|
+| 75 | 1.0000 ± 0.0000 | 0.8829 ± 0.0448 |
+| 150 | 1.0000 ± 0.0000 | 0.8830 ± 0.0236 |
+| 225 | 1.0000 ± 0.0000 | 0.9022 ± 0.0204 |
+| 300 | 1.0000 ± 0.0000 | 0.9013 ± 0.0310 |
+| 375 | 1.0000 ± 0.0000 | 0.8831 ± 0.0428 |
+| 450 | 1.0000 ± 0.0000 | 0.8970 ± 0.0260 |
+| 525 | 0.9996 ± 0.0008 | 0.9135 ± 0.0124 |
+| 600 | 1.0000 ± 0.0000 | 0.9022 ± 0.0281 |
+| 675 | 0.9991 ± 0.0013 | 0.9126 ± 0.0200 |
+| 750 | 0.9995 ± 0.0012 | 0.9268 ± 0.0173 |
+| 825 | 0.9998 ± 0.0005 | 0.9122 ± 0.0119 |
+| 900 | 0.9996 ± 0.0006 | 0.9228 ± 0.0044 |
+| 975 | 0.9998 ± 0.0005 | 0.9053 ± 0.0115 |
+| 1050 | 0.9994 ± 0.0008 | 0.9225 ± 0.0208 |
+| 1125 | 0.9986 ± 0.0012 | 0.9254 ± 0.0191 |
+| 1200 | 0.9980 ± 0.0009 | 0.9340 ± 0.0141 |
+| 1275 | 0.9976 ± 0.0026 | 0.9176 ± 0.0293 |
+| 1350 | 0.9981 ± 0.0013 | 0.9082 ± 0.0169 |
+| 1425 | 0.9959 ± 0.0033 | 0.9223 ± 0.0148 |
+| 1500 | 0.9965 ± 0.0024 | 0.9121 ± 0.0188 |
+| 1575 | 0.9958 ± 0.0038 | 0.9205 ± 0.0150 |
+| 1650 | 0.9942 ± 0.0047 | 0.9310 ± 0.0176 |
+| 1725 | 0.9962 ± 0.0010 | 0.9262 ± 0.0138 |
+| 1800 | 0.9897 ± 0.0072 | 0.9380 ± 0.0250 |
+| 1875 | 0.9963 ± 0.0040 | 0.9148 ± 0.0250 |
+| 1950 | 0.9937 ± 0.0056 | 0.9226 ± 0.0156 |
+| 2025 | 0.9918 ± 0.0061 | 0.9230 ± 0.0221 |
+| 2100 | 0.9897 ± 0.0044 | 0.9245 ± 0.0298 |
+| 2175 | 0.9913 ± 0.0035 | 0.9248 ± 0.0143 |
+| 2250 | 0.9907 ± 0.0065 | 0.9304 ± 0.0118 |
